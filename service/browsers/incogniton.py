@@ -6,7 +6,6 @@ from config import settings
 
 # TODO: Возвращать количество созданных аккаунтов
 def create_accounts(ip_addresses: list[str]) -> int:
-#    """Создание профилей Incogniton с указанными прокси-адресами"""
     responses = []
     for index, ip_address in enumerate(ip_addresses):
         profile_name = settings.BROWSER_NAME_PREFIX + \

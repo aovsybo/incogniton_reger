@@ -8,10 +8,9 @@ from service import proxies
 from service.proxies import proxymarket
 from service.browsers import incogniton, dolphin
 
-# TODO: Выводить сообщения о создании аккаунтов во view
-# TODO: Префикс для имени на русском
-# TODO: Уникализация настроек
 
+# TODO: Префикс для имени на русском
+# TODO: Уникализация настроек webgl info
 class InterfaceField(Protocol):
     def get(self) -> str: ...
 
@@ -45,7 +44,7 @@ def save_settings_to_config(
         settings.update_config_data(**dict(config))
 
 
-def create_accounts(entry_for_amount_of_accounts):
+def create_accounts(entry_for_amount_of_accounts, feedback_text):
     """Покупка прокси и создание аккаунтов в браузере"""
     amount_of_accounts = int(entry_for_amount_of_accounts.get())
     settings.update_config_data(
@@ -60,9 +59,9 @@ def create_accounts(entry_for_amount_of_accounts):
         settings.CHOSEN_BROWSER_APP
     ).create_accounts(proxy_ip_addresses)
     if amount_of_created_accounts == amount_of_accounts:
-        print("Аккаунты успешно созданы")
+        feedback_text.set("Аккаунты успешно созданы")
     else:
-        print(f"Превышен лимит профилей браузера. Создано аккаунтов: {amount_of_created_accounts}")
+        feedback_text.set(f"Превышен лимит профилей браузера. Создано аккаунтов: {amount_of_created_accounts}")
     settings.update_config_data(
         BROWSER_NAME_SHIFT=settings.BROWSER_NAME_SHIFT+amount_of_created_accounts
     )
