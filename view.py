@@ -12,7 +12,7 @@ from utils import aggregate_callables
 
 
 # TODO: Сделать крупнее шрифты
-# TODO: Настроить Выбор типа прокси
+# TODO: Настроить отображение выбора типа прокси
 class HighlightingEntry(Entry):
     """Реализация подсветки неверных данных в полях ввода"""
     def mark_errored(self):

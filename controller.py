@@ -9,8 +9,15 @@ from service.proxies import proxymarket
 from service.browsers import incogniton, dolphin
 
 
-# TODO: Префикс для имени на русском
-# TODO: Уникализация настроек webgl info
+# TODO: Добавить https://astroproxy.com/
+# TODO: Добавить https://proxy5.ru/
+# TODO: Добавить https://proxys.io/
+# TODO: Добавить https://spaceproxy.net/api-proxy/
+# TODO: Добавить https://proxyline.net/api-info/
+
+# TODO: Добавить https://multilogin.com/ru/
+# TODO: Добавить https://octobrowser.net/
+# TODO: Добавить https://www.adspower.com/ru
 class InterfaceField(Protocol):
     def get(self) -> str: ...
 

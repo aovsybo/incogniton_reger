@@ -5,6 +5,7 @@ from model import CreateDolphinAccountInfo
 from service.errors import AccountProcessingError
 
 
+# TODO: Допилить уникализацию настроек webgl info
 def create_accounts(ip_addresses: list[str]) -> int:
     """Создание профилей Dolphin с указанными прокси-адресами"""
     if not settings.DOLPHIN_API_TOKEN:

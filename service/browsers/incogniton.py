@@ -4,8 +4,9 @@ from model import CreateIncognitonAccountInfo
 from config import settings
 
 
-# TODO: ¬ÓÁ‚‡˘‡Ú¸ ÍÓÎË˜ÂÒÚ‚Ó ÒÓÁ‰‡ÌÌ˚ı ‡ÍÍ‡ÛÌÚÓ‚
+# TODO: –í–æ–∑–≤—Ä–∞—â–∞—Ç—å –∫–æ–ª–∏—á–µ—Å—Ç–≤–æ —Å–æ–∑–¥–∞–Ω–Ω—ã—Ö –∞–∫–∫–æ–≤
 def create_accounts(ip_addresses: list[str]) -> int:
+    """–°–æ–∑–¥–∞–Ω–∏–µ –ø—Ä–æ—Ñ–∏–ª–µ–π Incogniton —Å —É–∫–∞–∑–∞–Ω–Ω—ã–º–∏ –ø—Ä–æ–∫—Å–∏-–∞–¥—Ä–µ—Å–∞–º–∏"""
     responses = []
     for index, ip_address in enumerate(ip_addresses):
         profile_name = settings.BROWSER_NAME_PREFIX + \

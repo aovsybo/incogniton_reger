@@ -86,7 +86,6 @@ class CreateIncognitonAccountInfo(CreateAccountInfo):
         return profile_data
 
 
-# TODO: Изменить инфу в вебгл инфо
 class CreateDolphinAccountInfo(CreateAccountInfo):
     """Создание тела запроса в Dolphin"""
     info_template = """{{
@@ -131,4 +130,4 @@ class CreateDolphinAccountInfo(CreateAccountInfo):
             proxy_login=self.proxy_login,
             proxy_password=self.proxy_password,
         )
-        return profile_data
+        return profile_data.encode('utf-8')

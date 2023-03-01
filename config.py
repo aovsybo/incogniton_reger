@@ -38,7 +38,7 @@ class Settings(BaseSettings):
         super().__init__(**config)
 
     def update_config_data(self, **reger_settings):
-        with open('appsettings.json', 'r') as file_read:
+        with open('appsettings.json', 'r', encoding="utf-8") as file_read:
             config = dict(json.loads(file_read.read()))
         for key, value in reger_settings.items():
             config[key] = value
