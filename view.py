@@ -1,6 +1,7 @@
 from functools import partial
+
+import customtkinter as ct
 from tkinter import *
-from tkinter import ttk
 from typing import Callable
 
 from config import settings
@@ -11,57 +12,70 @@ from service.errors import AccountProcessingError
 from utils import aggregate_callables
 
 
-# TODO: Сделать крупнее шрифты
-# TODO: Настроить отображение выбора типа прокси
-class HighlightingEntry(Entry):
-    """Реализация подсветки неверных данных в полях ввода"""
-    def mark_errored(self):
-        self.config(
-            highlightbackground="red",
-            highlightcolor="red",
-            highlightthickness=1
-        )
-
-    def unmark_errored(self):
-        self.config(highlightthickness=0)
-
-
-class Window(Tk):
+class Window(ct.CTk):
     def __init__(self):
         super().__init__()
-        self.title("Создание аккаунтов")
-        self.geometry("600x300+300+300")
+        self.title("Создание профилей")
+        self.geometry(f"{settings.VIEW_WINDOW_PARAMS['width']}x"
+                      f"{settings.VIEW_WINDOW_PARAMS['height']}+"
+                      f"{settings.VIEW_WINDOW_PARAMS['x_shift']}+"
+                      f"{settings.VIEW_WINDOW_PARAMS['y_shift']}")
+        self.resizable(False, False)
+        self.bind_all("<Key>", self._on_key_release, "+")
+        ct.set_appearance_mode("light")
         self.init_menu()
+
+    def _on_key_release(self, event):
+        """Позволяет копировать, вставлять и вырезать при русской раскладке"""
+        ctrl = (event.state & 0x4) != 0
+        if event.keycode == 88 and ctrl and event.keysym.lower() != "x":
+            event.widget.event_generate("<<Cut>>")
+
+        if event.keycode == 86 and ctrl and event.keysym.lower() != "v":
+            event.widget.event_generate("<<Paste>>")
+
+        if event.keycode == 67 and ctrl and event.keysym.lower() != "c":
+            event.widget.event_generate("<<Copy>>")
 
     def init_menu(self):
         """Инициализация вкладок окна"""
-        window_tabs = ttk.Notebook()
-        window_tabs.pack(fill='both', expand=TRUE)
-        frame_names = ["Создание", "Настройки", "Выбор ПО"]
-        frames = []
-        for i, name in enumerate(frame_names):
-            frames.append(ttk.Frame(window_tabs, padding=10))
-            frames[i].pack(fill='both', expand=TRUE)
-            window_tabs.add(frames[i], text=name)
-        self.init_main(frames[0])
-        self.init_settings(frames[1])
-        self.init_programs(frames[2])
+        window_tabview = ct.CTkTabview(self)
+        window_tabview.pack(fill='both', expand=TRUE)
+        frame_names = ["Создание", "Настройки", "Сервисы"]
+        for name in frame_names:
+            window_tabview.add(name)
+            window_tabview.tab(name).grid_columnconfigure(0)
+        self.init_main(window_tabview.tab(frame_names[0]))
+        self.init_settings(window_tabview.tab(frame_names[1]))
+        self.init_programs(window_tabview.tab(frame_names[2]))
 
     def init_main(self, frame):
         """Инициализация вкладки создания аккаунтов"""
-        info_label = Label(frame, text="Укажите количество аккаунтов: ")
-        info_label.grid(column=0, row=0, sticky=E)
-        entry_for_amount_of_accounts = Entry(frame)
-        entry_for_amount_of_accounts.grid(column=1, row=0)
+        info_label = ct.CTkLabel(
+            frame,
+            text="Укажите количество аккаунтов:",
+            font=ct.CTkFont(size=settings.VIEW_FONT_SIZE),
+            anchor="center",
+        )
+        info_label.grid(column=0, row=0, padx=(20, 0), pady=20)
+        entry_for_amount_of_accounts = ct.CTkEntry(
+            frame,
+            font=ct.CTkFont(size=settings.VIEW_FONT_SIZE),
+            width=180,
+        )
+        entry_for_amount_of_accounts.grid(column=1, row=0, padx=10)
         entry_for_amount_of_accounts.insert(
             0,
             settings.PREVIOUS_NUMBER_OF_PURCHASED_ACCOUNTS
         )
-        entry_for_amount_of_accounts.focus()
         self.feedback_text = StringVar()
-        self.feedback_label = Label(frame, textvariable=self.feedback_text)
-        self.feedback_label.grid(column=1, row=2, sticky=E)
-        create_button = Button(
+        feedback_label = ct.CTkLabel(
+            frame,
+            textvariable=self.feedback_text,
+            font=ct.CTkFont(size=settings.VIEW_FONT_SIZE),
+        )
+        feedback_label.grid(column=0, columnspan=3, row=2)
+        create_button = ct.CTkButton(
             frame,
             text="Создать",
             command=partial(
@@ -71,58 +85,78 @@ class Window(Tk):
                     entry_for_amount_of_accounts=entry_for_amount_of_accounts,
                     feedback_text=self.feedback_text,
                 ),
-                self.update_shift_field
+                self.update_shift_field,
             )
         )
-        create_button.grid(column=2, row=0, sticky=E, padx=5)
+        create_button.grid(column=2, row=0)
+
+    def create_settings_line(self, frame, field, index):
+        self.config_labels.append(ct.CTkLabel(
+            frame,
+            text=RegerSettings.ru(field),
+            font=ct.CTkFont(size=settings.VIEW_FONT_SIZE),
+        ))
+        self.config_labels[index].grid(column=0, row=index, padx=(110, 5), pady=2, sticky="E")
+        self.config_entries.append(ct.CTkEntry(
+            frame,
+            font=ct.CTkFont(size=settings.VIEW_FONT_SIZE),
+            width=240
+        ))
+        self.config_entries[index].grid(column=1, row=index, columnspan=2, pady=2, sticky="W")
+        default_field_value = getattr(settings, field) \
+            if getattr(settings, field) is not None else ""
+        self.config_entries[index].insert(0, default_field_value)
 
     def init_settings(self, frame) -> None:
         """Инициализация вкладки с настройками"""
         self.config_entries = []
         self.config_labels = []
         for index, field in enumerate(RegerSettings.__fields__):
-            self.config_labels.append(Label(
-                frame,
-                text=RegerSettings.ru(field),
-                width=13,
-                anchor=E
-            ))
-            self.config_labels[index].grid(column=0, row=index, padx=3, pady=2)
-            self.config_entries.append(HighlightingEntry(frame, width=30))
-            self.config_entries[index].grid(column=1, row=index, pady=2)
-            default_field_value = getattr(settings, field) \
-                if getattr(settings, field) is not None else ""
-            self.config_entries[index].insert(0, default_field_value)
+            self.create_settings_line(frame, field, index)
         self.toggle_input()
-        Label(
+        ct.CTkLabel(
             frame,
             text="Тип прокси",
-            width=11,
-            anchor=E
-        ).grid(column=0, row=len(RegerSettings.__fields__) + 1, padx=3, pady=2)
+            anchor=E,
+            font=ct.CTkFont(size=settings.VIEW_FONT_SIZE),
+        ).grid(column=0, row=len(RegerSettings.__fields__) + 1, padx=(110, 5), pady=2, sticky="E")
         self.proxy_type_choice = StringVar()
         self.create_radio_buttons(
             frame,
             settings.PROXY_TYPE,
-            settings.LIST_OF_PROXY_TYPES.keys(),
+            settings.LIST_OF_PROXY_TYPES,
             choose_proxy_type,
             self.update_shift_field,
             len(RegerSettings.__fields__) + 1,
             self.proxy_type_choice
         )
-        save_button = Button(
+        self.settings_input_error_label_text = StringVar()
+        save_button = ct.CTkButton(
             frame,
             text="Сохранить",
             command=partial(
                 save_settings_to_config,
-                interface_setting_fields=self.config_entries
+                interface_setting_fields=self.config_entries,
+                settings_input_error_label_text = self.settings_input_error_label_text
             ),
         )
         save_button.grid(
-            column=1,
+            column=2,
             row=len(RegerSettings.__fields__) + 3,
             sticky=S + E,
             pady=5
+        )
+        settings_input_error_label = ct.CTkLabel(
+            frame,
+            textvariable=self.settings_input_error_label_text,
+            font=ct.CTkFont(size=settings.VIEW_FONT_SIZE),
+        )
+        settings_input_error_label.grid(
+            column=0,
+            columnspan=3,
+            row=len(RegerSettings.__fields__) + 4,
+            padx=(100, 0),
+            pady=(10, 0)
         )
 
     def create_radio_buttons(
@@ -137,7 +171,7 @@ class Window(Tk):
     ) -> None:
         choice.set(chosen_app)
         for i, app_name in enumerate(list_of_chosen_apps):
-            radio_button = Radiobutton(
+            radio_button = ct.CTkRadioButton(
                 frame,
                 text=app_name.capitalize(),
                 variable=choice,
@@ -148,7 +182,7 @@ class Window(Tk):
                     switch_command
                 ),
             )
-            radio_button.grid(column=i, row=row)
+            radio_button.grid(column=i+1, row=row, padx=(30, 0), pady=2)
 
     def init_programs(self, frame) -> None:
         """Инициализация вкладки с выбором программ"""
@@ -175,28 +209,33 @@ class Window(Tk):
 
     def toggle_input(self) -> None:
         """Включение и выключение отображения поля ввода токена Dolphin"""
-        for i, entry in enumerate(self.config_entries):
-            if (self.config_labels[i]["text"] == "Токен Dolphin") and \
-                    (settings.CHOSEN_BROWSER_APP != "dolphin"):
-                self.config_labels[i].grid_forget()
-                entry.grid_forget()
-            elif (self.config_labels[i]["text"] == "Токен Dolphin") and \
-                    (settings.CHOSEN_BROWSER_APP == "dolphin"):
-                entry.grid(column=1, row=1)
-                self.config_labels[i].grid(column=0, row=1)
+        searching_value = "Токен Dolphin"
+        try:
+            index_of_comparing_value = [
+                i for i in range(len(self.config_labels))
+                if self.config_labels[i]._text == searching_value
+            ][0]
+        except IndexError:
+            print("Не нашлось поля с значением searching_value")
+        else:
+            if settings.CHOSEN_BROWSER_APP != "dolphin":
+                self.config_labels[index_of_comparing_value].grid_forget()
+                self.config_entries[index_of_comparing_value].grid_forget()
+            else:
+                self.config_labels[index_of_comparing_value].grid(column=0, row=1, padx=(110, 5), pady=2, sticky="E")
+                self.config_entries[index_of_comparing_value].grid(column=1, row=1, columnspan=2, pady=2, sticky="W")
 
     def update_shift_field(self) -> None:
         """Актуализация данных поля "Сдвиг" после создания аккаунтов"""
+        searching_value = "Сдвиг"
         for i, entry in enumerate(self.config_entries):
-            if self.config_labels[i]["text"] == "Сдвиг":
+            if self.config_labels[i]._text == searching_value:
                 entry.delete(0, END)
                 entry.insert(0, settings.BROWSER_NAME_SHIFT)
 
     def report_callback_exception(self, exc, val, tb) -> None:
         if exc is AccountProcessingError:
             self.feedback_text.set(val)
-            # print(self.feedback_label.keys())
-            # print(self.feedback_label["text"])
 
 
 def mainloop():

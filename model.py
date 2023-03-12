@@ -5,11 +5,11 @@ from pydantic import BaseModel, validator
 class RegerSettings(BaseModel):
     """Класс с  полями, выводимыми во вкладке "настройки" во view.py"""
     _ru: ClassVar[dict[str, str]] = {
-        "PROXY_MARKET_API_TOKEN": "Токен Прокси",
+        "PROXY_MARKET_API_TOKEN": "Токен Прокси*",
         "DOLPHIN_API_TOKEN": "Токен Dolphin",
-        "BROWSER_NAME_SHIFT": "Сдвиг",
+        "BROWSER_NAME_SHIFT": "Номер аккаунта*",
         "BROWSER_NAME_PREFIX": "Префикс имени",
-        "BROWSER_GROUP_NAME": "Группа",
+        "BROWSER_GROUP_NAME": "Название группы",
     }
 
     PROXY_MARKET_API_TOKEN: str | None
@@ -66,7 +66,7 @@ class CreateIncognitonAccountInfo(CreateAccountInfo):
                "simulated_operating_system": "Windows"
            }},
            "Proxy": {{
-               "connection_type": "HTTP proxy",
+               "connection_type": "{proxy_type}",
                "proxy_url": "{proxy_url}",
                "proxy_username": "{proxy_login}",
                "proxy_password": "{proxy_password}",
@@ -78,7 +78,7 @@ class CreateIncognitonAccountInfo(CreateAccountInfo):
         profile_data = self.info_template.format(
             profile_name=self.profile_name,
             profile_group=self.profile_group,
-            proxy_type=f"{self.proxy_type.upper()} proxy",
+            proxy_type=self.proxy_type,
             proxy_url=f'{self.proxy_host}:{self.proxy_port}',
             proxy_login=self.proxy_login,
             proxy_password=self.proxy_password,

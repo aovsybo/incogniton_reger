@@ -13,14 +13,15 @@ class Settings(BaseSettings):
     LOCAL_DOLPHIN_URL: AnyHttpUrl = "http://localhost:3001/v1.0/"
     DOLPHIN_URL: HttpUrl = "https://anty-api.com/"
     PROXY_TIMEOUT_MINUTES: int = 2
-    LIST_OF_PROXY_APPS: list[str] = ["proxymarket", "proxy2", "proxy3"]
-    LIST_OF_PROXY_TYPES: dict[str, str] = {"http": "http", "socks": "socks5"}
+    LIST_OF_PROXY_APPS: list[str] = ["proxymarket"]
+    LIST_OF_PROXY_TYPES: list[str] = ["http", "socks"]
     LIST_OF_BROWSER_APPS: list[str] = ["incogniton", "dolphin"]
-
+    VIEW_WINDOW_PARAMS: dict[str, int] = {"width": 600, "height": 300, "x_shift": 300, "y_shift": 300}
+    VIEW_FONT_SIZE: int = 14
     PROXY_MARKET_API_TOKEN: str | None
     DOLPHIN_API_TOKEN: str | None
     BROWSER_NAME_SHIFT: int | None
-    BROWSER_NAME_PREFIX: str
+    BROWSER_NAME_PREFIX: str | None
     BROWSER_GROUP_NAME: str
     PROXY_LOGIN: str
     PROXY_PASSWORD: str
@@ -38,7 +39,7 @@ class Settings(BaseSettings):
         super().__init__(**config)
 
     def update_config_data(self, **reger_settings):
-        with open('appsettings.json', 'r', encoding="utf-8") as file_read:
+        with open('appsettings.json', 'r') as file_read:
             config = dict(json.loads(file_read.read()))
         for key, value in reger_settings.items():
             config[key] = value

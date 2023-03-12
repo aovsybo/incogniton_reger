@@ -17,11 +17,12 @@ def create_accounts(ip_addresses: list[str]) -> int:
     responses = []
     for i, ip_address in enumerate(ip_addresses):
         number_of_account = str(settings.BROWSER_NAME_SHIFT + i)
+        proxy_type = "socks5" if settings.PROXY_TYPE == "socks" else "http"
         account_info = CreateDolphinAccountInfo(
             profile_name=settings.BROWSER_NAME_PREFIX + number_of_account,
             profile_group=settings.BROWSER_GROUP_NAME,
             proxy_host=ip_address,
-            proxy_type=settings.LIST_OF_PROXY_TYPES[settings.PROXY_TYPE],
+            proxy_type=proxy_type,
             proxy_port=settings.PROXY_PORT,
             proxy_login=settings.PROXY_LOGIN,
             proxy_password=settings.PROXY_PASSWORD,

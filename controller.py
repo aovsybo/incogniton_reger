@@ -9,15 +9,6 @@ from service.proxies import proxymarket
 from service.browsers import incogniton, dolphin
 
 
-# TODO: Добавить https://astroproxy.com/
-# TODO: Добавить https://proxy5.ru/
-# TODO: Добавить https://proxys.io/
-# TODO: Добавить https://spaceproxy.net/api-proxy/
-# TODO: Добавить https://proxyline.net/api-info/
-
-# TODO: Добавить https://multilogin.com/ru/
-# TODO: Добавить https://octobrowser.net/
-# TODO: Добавить https://www.adspower.com/ru
 class InterfaceField(Protocol):
     def get(self) -> str: ...
 
@@ -27,7 +18,8 @@ class InterfaceField(Protocol):
 
 
 def save_settings_to_config(
-        interface_setting_fields: Sequence[InterfaceField]
+        interface_setting_fields: Sequence[InterfaceField],
+        settings_input_error_label_text,
 ):
     """Сохранение настроек из полей ввода view.py в config.py"""
     try:
@@ -42,12 +34,11 @@ def save_settings_to_config(
         )
         for index, name in enumerate(RegerSettings.__fields__):
             if name in error_fields:
-                interface_setting_fields[index].mark_errored()
-            else:
-                interface_setting_fields[index].unmark_errored()
+                settings_input_error_label_text.set(
+                    f"Необходимо ввести числовое значение в поле '{RegerSettings.ru(name)}'"
+                )
     else:
-        for entry in interface_setting_fields:
-            entry.unmark_errored()
+        settings_input_error_label_text.set("")
         settings.update_config_data(**dict(config))
 
 
@@ -61,16 +52,17 @@ def create_accounts(entry_for_amount_of_accounts, feedback_text):
         proxies,
         settings.CHOSEN_PROXY_APP
     ).buy_and_get_ips(amount_of_accounts)
-    amount_of_created_accounts = getattr(
+    status_of_creating = getattr(
         browsers,
         settings.CHOSEN_BROWSER_APP
     ).create_accounts(proxy_ip_addresses)
-    if amount_of_created_accounts == amount_of_accounts:
+    if status_of_creating["amount_of_created_accounts"] == amount_of_accounts:
         feedback_text.set("Аккаунты успешно созданы")
     else:
-        feedback_text.set(f"Превышен лимит профилей браузера. Создано аккаунтов: {amount_of_created_accounts}")
+        feedback_text.set(f"{status_of_creating['mistake_message']} "
+                          f"Создано аккаунтов: {status_of_creating['amount_of_created_accounts']}")
     settings.update_config_data(
-        BROWSER_NAME_SHIFT=settings.BROWSER_NAME_SHIFT+amount_of_created_accounts
+        BROWSER_NAME_SHIFT=settings.BROWSER_NAME_SHIFT+status_of_creating['amount_of_created_accounts']
     )
 
 
