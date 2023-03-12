@@ -5,8 +5,7 @@ from tkinter import *
 from typing import Callable
 
 from config import settings
-from controller import save_settings_to_config, \
-    create_accounts, choose_proxy, choose_browser, choose_proxy_type
+from controller import save_settings_to_config, create_accounts, choose_proxy_type
 from model import RegerSettings
 from service.errors import AccountProcessingError
 from utils import aggregate_callables
@@ -37,17 +36,20 @@ class Window(ct.CTk):
         if event.keycode == 67 and ctrl and event.keysym.lower() != "c":
             event.widget.event_generate("<<Copy>>")
 
+        if event.keycode == 65 and ctrl and event.keysym.lower() != "a":
+            event.widget.event_generate("<<SelectAll>>")
+
+
     def init_menu(self):
         """Инициализация вкладок окна"""
         window_tabview = ct.CTkTabview(self)
         window_tabview.pack(fill='both', expand=TRUE)
-        frame_names = ["Создание", "Настройки", "Сервисы"]
+        frame_names = ["Создание", "Настройки"]
         for name in frame_names:
             window_tabview.add(name)
             window_tabview.tab(name).grid_columnconfigure(0)
         self.init_main(window_tabview.tab(frame_names[0]))
         self.init_settings(window_tabview.tab(frame_names[1]))
-        self.init_programs(window_tabview.tab(frame_names[2]))
 
     def init_main(self, frame):
         """Инициализация вкладки создания аккаунтов"""
@@ -113,7 +115,6 @@ class Window(ct.CTk):
         self.config_labels = []
         for index, field in enumerate(RegerSettings.__fields__):
             self.create_settings_line(frame, field, index)
-        self.toggle_input()
         ct.CTkLabel(
             frame,
             text="Тип прокси",
@@ -155,7 +156,7 @@ class Window(ct.CTk):
             column=0,
             columnspan=3,
             row=len(RegerSettings.__fields__) + 4,
-            padx=(100, 0),
+            padx=(70, 0),
             pady=(10, 0)
         )
 
@@ -184,50 +185,9 @@ class Window(ct.CTk):
             )
             radio_button.grid(column=i+1, row=row, padx=(30, 0), pady=2)
 
-    def init_programs(self, frame) -> None:
-        """Инициализация вкладки с выбором программ"""
-        self.proxy_choice = StringVar()
-        self.browser_choice = StringVar()
-        self.create_radio_buttons(
-            frame,
-            settings.CHOSEN_BROWSER_APP,
-            settings.LIST_OF_BROWSER_APPS,
-            choose_browser,
-            self.toggle_input,
-            0,
-            self.proxy_choice
-        )
-        self.create_radio_buttons(
-            frame,
-            settings.CHOSEN_PROXY_APP,
-            settings.LIST_OF_PROXY_APPS,
-            choose_proxy,
-            self.toggle_input,
-            1,
-            self.browser_choice
-        )
-
-    def toggle_input(self) -> None:
-        """Включение и выключение отображения поля ввода токена Dolphin"""
-        searching_value = "Токен Dolphin"
-        try:
-            index_of_comparing_value = [
-                i for i in range(len(self.config_labels))
-                if self.config_labels[i]._text == searching_value
-            ][0]
-        except IndexError:
-            print("Не нашлось поля с значением searching_value")
-        else:
-            if settings.CHOSEN_BROWSER_APP != "dolphin":
-                self.config_labels[index_of_comparing_value].grid_forget()
-                self.config_entries[index_of_comparing_value].grid_forget()
-            else:
-                self.config_labels[index_of_comparing_value].grid(column=0, row=1, padx=(110, 5), pady=2, sticky="E")
-                self.config_entries[index_of_comparing_value].grid(column=1, row=1, columnspan=2, pady=2, sticky="W")
-
     def update_shift_field(self) -> None:
         """Актуализация данных поля "Сдвиг" после создания аккаунтов"""
-        searching_value = "Сдвиг"
+        searching_value = RegerSettings.ru("BROWSER_NAME_SHIFT")
         for i, entry in enumerate(self.config_entries):
             if self.config_labels[i]._text == searching_value:
                 entry.delete(0, END)

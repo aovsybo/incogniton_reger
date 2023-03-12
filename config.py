@@ -9,27 +9,19 @@ class Settings(BaseSettings):
     APPSETTINGS_PATH: Path = PROJECT_PATH / "appsettings.json"
     PROXIES_URL: HttpUrl = 'https://proxy.market/dev-api/'
     INCOGNITON_URL: AnyHttpUrl = "http://localhost:35000/profile/"
-    REMOTE_DOLPHIN_URL: HttpUrl = "https://anty-api.com/"
-    LOCAL_DOLPHIN_URL: AnyHttpUrl = "http://localhost:3001/v1.0/"
-    DOLPHIN_URL: HttpUrl = "https://anty-api.com/"
     PROXY_TIMEOUT_MINUTES: int = 2
-    LIST_OF_PROXY_APPS: list[str] = ["proxymarket"]
     LIST_OF_PROXY_TYPES: list[str] = ["http", "socks"]
-    LIST_OF_BROWSER_APPS: list[str] = ["incogniton", "dolphin"]
     VIEW_WINDOW_PARAMS: dict[str, int] = {"width": 600, "height": 300, "x_shift": 300, "y_shift": 300}
     VIEW_FONT_SIZE: int = 14
-    PROXY_MARKET_API_TOKEN: str | None
-    DOLPHIN_API_TOKEN: str | None
-    BROWSER_NAME_SHIFT: int | None
+    PROXY_MARKET_API_TOKEN: str
+    BROWSER_NAME_SHIFT: int
     BROWSER_NAME_PREFIX: str | None
-    BROWSER_GROUP_NAME: str
+    BROWSER_GROUP_NAME: str | None
     PROXY_LOGIN: str
     PROXY_PASSWORD: str
     PROXY_TYPE: str
     PROXY_PORT: str
     PREVIOUS_NUMBER_OF_PURCHASED_ACCOUNTS: int
-    CHOSEN_PROXY_APP: str
-    CHOSEN_BROWSER_APP: str
 
     def __init__(self):
         with open(

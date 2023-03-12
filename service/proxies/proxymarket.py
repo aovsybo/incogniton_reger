@@ -12,9 +12,9 @@ MISTAKE_CODES = {
 
 def buy_and_get_ips(amount_of_accounts: int):
     """Покупка прокси и возврат ip-адресов"""
-    # bought_status = buy_ips(amount_of_accounts)
-    # if not bought_status["is_bought"]:
-    #     raise AccountProcessingError(MISTAKE_CODES[bought_status["mistake_code"]])
+    bought_status = buy_ips(amount_of_accounts)
+    if not bought_status["is_bought"]:
+        raise AccountProcessingError(MISTAKE_CODES[bought_status["mistake_code"]])
     ip_addresses = get_ip_addresses()
     if not ip_addresses:
         raise AccountProcessingError("Не удалось купить прокси")
@@ -45,7 +45,8 @@ def buy_ips(amount_of_accounts: int) -> dict:
         headers=headers,
         json=data
     ).json()
-    print(response)
+    if "message" in response and response["message"] == 'Неверный api_key':
+        raise AccountProcessingError("Неверно введен API-токен")
     mistake_code: str = ""
     is_bought: bool = False
     if "success" in response:
@@ -88,8 +89,6 @@ def get_ip_addresses() -> list[str]:
         headers=headers,
         json=data,
     ).json()
-    if "message" in response and response["message"] == 'Неверный api_key':
-        raise AccountProcessingError("Неверно введен API-токен")
     list_of_ip_info = response["list"]["data"]
     check_if_ip_enter_data_in_config(list_of_ip_info)
     data_of_last_buying = list_of_ip_info[-1]['bought_at']
@@ -97,8 +96,8 @@ def get_ip_addresses() -> list[str]:
         ip_info for ip_info in list_of_ip_info
         if ip_info['bought_at'] == data_of_last_buying
     ]
-    # if not is_date_on_timeout(data_of_last_buying):
-    #     raise AccountProcessingError("Проблемы с получением прокси")
+    if not is_date_on_timeout(data_of_last_buying):
+        raise AccountProcessingError("Проблемы с получением прокси")
     proxies = [profile['ip']
                for profile in
                list_of_latest_ip_info[-len(list_of_latest_ip_info)::1]]

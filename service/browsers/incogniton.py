@@ -14,13 +14,13 @@ MISTAKES = {
     MISTAKE_GROUP_NAME_DOESNT_EXIST: "Отстутствует группа с указанным именем.",
 }
 
+
 def create_accounts(ip_addresses: list[str]) -> dict:
     """Создание профилей Incogniton с указанными прокси-адресами"""
     responses = []
     for index, ip_address in enumerate(ip_addresses):
         name_prefix = settings.BROWSER_NAME_PREFIX if settings.BROWSER_NAME_PREFIX else ""
-        profile_name = name_prefix + \
-                       str(settings.BROWSER_NAME_SHIFT + index)
+        profile_name = name_prefix + str(settings.BROWSER_NAME_SHIFT + index)
         profile_group = settings.BROWSER_GROUP_NAME if settings.BROWSER_GROUP_NAME else "Unassigned"
         proxy_type = "SOCKS 5" if settings.PROXY_TYPE == "socks" else "HTTP"
         account_info = CreateIncognitonAccountInfo(
