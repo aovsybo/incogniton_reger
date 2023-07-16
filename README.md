@@ -3,6 +3,9 @@
 ## Description
 This program automaticly buys selected amount of proxies from proxy.market and creates browser profiles in Incogniton with these proxies. It works only with "Entrepreneur" and higher versions of Incogniton.
 
+## Technologies
+The project designed with MVC-architecture. It mostly worked with API of different services. Interface was developed with "CustomTKinter" library.
+
 ## Usage 
 At the first start, you need to enter the settings - [proxymarket](https://ru.proxy.market/) token and start number of account (group name and name prefix are optional). After that all you need is to enter amount of accounts you want to create and put create button. Result is on the picture bellow. 
 
