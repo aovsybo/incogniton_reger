@@ -1,14 +1,12 @@
 from itertools import chain
 from typing import Protocol, Sequence
 
-from config import settings
-from model import RegerSettings
-from service import browsers
-from service import proxies
-from service.errors import AccountProcessingError
+from src.config import settings
+from src.model import RegerSettings
+from src.service.errors import AccountProcessingError
 
-from service.proxies import proxymarket
-from service.browsers import incogniton
+from src.service.proxies import proxymarket
+from src.service.browsers import incogniton
 
 
 class InterfaceField(Protocol):

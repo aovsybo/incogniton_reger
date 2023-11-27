@@ -4,11 +4,11 @@ import customtkinter as ct
 from tkinter import *
 from typing import Callable
 
-from config import settings
-from controller import save_settings_to_config, create_accounts, choose_proxy_type
-from model import RegerSettings
-from service.errors import AccountProcessingError
-from utils import aggregate_callables
+from src.config import settings
+from src.controller import save_settings_to_config, create_accounts, choose_proxy_type
+from src.model import RegerSettings
+from src.service.errors import AccountProcessingError
+from src.utils import aggregate_callables
 
 
 class Window(ct.CTk):

@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 import requests
 
-from config import settings
-from service.errors import AccountProcessingError
+from src.config import settings
+from src.service.errors import AccountProcessingError
 
 
 MISTAKE_CODES = {

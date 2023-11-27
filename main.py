@@ -1,4 +1,4 @@
-from view import mainloop
+from src.view import mainloop
 
 
 if __name__ == '__main__':

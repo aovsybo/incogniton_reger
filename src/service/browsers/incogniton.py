@@ -1,7 +1,7 @@
 import requests
 
-from model import CreateIncognitonAccountInfo
-from config import settings
+from src.model import CreateIncognitonAccountInfo
+from src.config import settings
 
 
 MISTAKE_LIMIT_PROFILES = 'CREATING PROFILE: Your subscription has not enough space for more profiles.'

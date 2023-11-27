@@ -5,7 +5,7 @@ from pydantic import AnyHttpUrl, BaseSettings, HttpUrl
 
 
 class Settings(BaseSettings):
-    PROJECT_PATH: Path = Path(__file__).parent
+    PROJECT_PATH: Path = Path(__file__).parent.parent
     APPSETTINGS_PATH: Path = PROJECT_PATH / "appsettings.json"
     PROXIES_URL: HttpUrl = 'https://proxy.market/dev-api/'
     INCOGNITON_URL: AnyHttpUrl = "http://localhost:35000/profile/"
