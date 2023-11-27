@@ -3,7 +3,7 @@ from pydantic import BaseModel, validator
 
 
 class RegerSettings(BaseModel):
-    """Класс с  полями, выводимыми во вкладке "настройки" во view.py"""
+    """Класс с полями, выводимыми во вкладке "настройки" во view.py"""
     _ru: ClassVar[dict[str, str]] = {
         "PROXY_MARKET_API_TOKEN": "Токен Прокси*",
         "BROWSER_NAME_SHIFT": "Номер аккаунта*",
