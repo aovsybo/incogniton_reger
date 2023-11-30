@@ -1,20 +1,39 @@
 # Incogniton reger
 
-## Description
-This program automaticly buys selected amount of proxies from proxy.market and creates browser profiles in Incogniton with these proxies. It works only with "Entrepreneur" and higher versions of Incogniton.
+# Описание
+Приложение, позволяющее в автоматическом режиме закупать заданное число прокси и создавать профили в антидетект браузере "Incogniton" с этими прокси.
+Изначально во вкладке настройки необходимо выставить необходимые параметры:
+- [Токен прокси](https://ru.proxy.market/) - для доступа к API
+- Номер аккаунта - с него будет начинаться нумерация
+- Тип прокси
 
-## Technologies
-The project designed with MVC-architecture. It mostly worked with API of different services. Interface was developed with "CustomTKinter" library.
+Также имеются опциональные параметры
+- Префикс имени - чтобы имена профилей состояли не только из порядковых номеров
+- Имя группы 
 
-## Instalation
+![image](https://github.com/aovsybo/incogniton_reger/assets/66824112/66a318ac-a9ea-4a3b-a4cf-873af7a1d663)
+
+# Технологии
+Приложение проектировалось основываясь на паттерне MVC <br/>
+В качестве библиотеки для графического интерфейса использовался tkinter и customtkinter <br/>
+Пользовательские настройки хранятся на клиентской стороне в файле формата json <br/>
+
+![image](https://github.com/aovsybo/incogniton_reger/assets/66824112/8ba40994-89e5-404a-8648-2cfac8c86f10)
+
+## Запуск
 ```shell
 pip install requirements.txt
 python main.py
 ```
-## Usage 
-At the first start, you need to enter the settings - [proxymarket](https://ru.proxy.market/) token and start number of account (group name and name prefix are optional). After that all you need is to enter amount of accounts you want to create and put create button. Result is on the picture bellow. 
+
+## Пример работы 
+Во время исопльзования приложения Incogniton должен быть запущен. <br/>
+Перед первым использованием необходимо выставить обязательные настройки во вкладке "Настройки". После этого необходимо во вкладке "Создание" ввести количество создаваемых аккаунтов и нажать кнопку создать.
+
+![image](https://github.com/aovsybo/incogniton_reger/assets/66824112/e067f182-bd14-4952-bc1d-6163442d8657)
+
+В результате будет создано 5 аккаунтов, пронумерованных начиная с 228 без префикса имени, у каждого из которых будет уникальный прокси.
 
 ![image](https://github.com/aovsybo/incogniton_reger/assets/66824112/ba52cb3f-ab67-4ce4-a808-652ecdc5f349)
 
-Next time when you will create accounts, numeration will shift automatically. <br>
-Important: Incogniton must be turned on during account creating.
+После этого настройка "номер аккаунта" увеличится на число созданных аккаунтов для того, чтобы при последующих созданиях нумерация была корректной.
